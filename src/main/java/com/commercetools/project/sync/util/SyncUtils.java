@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 
 public final class SyncUtils {
@@ -41,13 +42,13 @@ public final class SyncUtils {
       @Nonnull final String resourceName,
       @Nonnull final SyncException exception,
       @Nonnull final Optional<T> resource,
-      @Nonnull final List<UpdateAction<T>> updateActions) {
+      @Nullable final List<UpdateAction<T>> updateActions) {
     logger.error(
         format(
             "Error when trying to sync %s. Existing key: %s. Update actions: %s",
             resourceName,
             resource.map(WithKey::getKey).orElse(""),
-            updateActions.stream().map(Object::toString).collect(Collectors.joining(","))),
+            Optional.ofNullable(updateActions).map(actions -> actions.stream().map(Object::toString).collect(Collectors.joining(","))).orElse("null")),
         exception);
   }
 

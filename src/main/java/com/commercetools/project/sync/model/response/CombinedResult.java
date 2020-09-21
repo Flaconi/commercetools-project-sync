@@ -8,16 +8,19 @@ public class CombinedResult {
   private final ResultingResourcesContainer products;
   private final ResultingResourcesContainer categories;
   private final ResultingResourcesContainer productTypes;
+  private final ResultingResourcesContainer customObjects;
 
   @JsonCreator
   public CombinedResult(
       @JsonProperty("products") @Nullable final ResultingResourcesContainer products,
       @JsonProperty("categories") @Nullable final ResultingResourcesContainer categories,
-      @JsonProperty("productTypes") @Nullable final ResultingResourcesContainer productTypes) {
+      @JsonProperty("productTypes") @Nullable final ResultingResourcesContainer productTypes,
+      @JsonProperty("customObjects") @Nullable final ResultingResourcesContainer customObjects) {
 
     this.products = products;
     this.categories = categories;
     this.productTypes = productTypes;
+    this.customObjects = customObjects;
   }
 
   public ResultingResourcesContainer getProducts() {
@@ -30,5 +33,9 @@ public class CombinedResult {
 
   public ResultingResourcesContainer getProductTypes() {
     return productTypes;
+  }
+
+  public ResultingResourcesContainer getCustomObjects() {
+    return customObjects;
   }
 }

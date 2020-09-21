@@ -21,15 +21,18 @@ public class CombinedResourceKeysRequest implements SphereRequest<CombinedResult
   private final Set<String> productIds;
   private final Set<String> categoryIds;
   private final Set<String> productTypeIds;
+  private final Set<String> customObjectIds;
   private static final int QUERY_LIMIT = 500;
 
   public CombinedResourceKeysRequest(
       @Nonnull final Set<String> productIds,
       @Nonnull final Set<String> categoryIds,
-      @Nonnull final Set<String> productTypeIds) {
+      @Nonnull final Set<String> productTypeIds,
+      @Nonnull final Set<String> customObjectIds) {
     this.productIds = requireNonNull(productIds);
     this.categoryIds = requireNonNull(categoryIds);
     this.productTypeIds = requireNonNull(productTypeIds);
+    this.customObjectIds = requireNonNull(customObjectIds);
   }
 
   @Nullable
@@ -55,9 +58,11 @@ public class CombinedResourceKeysRequest implements SphereRequest<CombinedResult
         categoryIds.isEmpty() ? "" : createCategoriesGraphQlQuery(categoryIds);
     final String productTypeQuery =
         productTypeIds.isEmpty() ? "" : createProductTypesGraphQlQuery(productTypeIds);
+    final String customObjectQuery =
+        customObjectIds.isEmpty() ? "" : createCustomObjectsGraphQlQuery(customObjectIds);
 
     final String queryValue =
-        Stream.of(productQuery, categoryQuery, productTypeQuery)
+        Stream.of(productQuery, categoryQuery, productTypeQuery, customObjectQuery)
             .filter(StringUtils::isNotBlank)
             .collect(joining(", ", "{ ", " }"));
 
@@ -78,6 +83,13 @@ public class CombinedResourceKeysRequest implements SphereRequest<CombinedResult
     return format(
         "categories(limit: %d, where: %s) { results { id key } }",
         QUERY_LIMIT, createWhereQuery(categoryIds));
+  }
+
+  @Nonnull
+  private static String createCustomObjectsGraphQlQuery(@Nonnull final Set<String> customObjectIds) {
+    return format(
+        "customObjects(limit: %d, where: %s) { results { id key } }",
+        QUERY_LIMIT, createWhereQuery(customObjectIds));
   }
 
   @Nonnull

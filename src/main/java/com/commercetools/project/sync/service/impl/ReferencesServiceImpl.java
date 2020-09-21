@@ -43,16 +43,19 @@ public class ReferencesServiceImpl extends BaseServiceImpl implements References
   public CompletionStage<Map<String, String>> getIdToKeys(
       @Nonnull final Set<String> productIds,
       @Nonnull final Set<String> categoryIds,
-      @Nonnull final Set<String> productTypeIds) {
+      @Nonnull final Set<String> productTypeIds,
+      @Nonnull final Set<String> customObjectIds) {
 
     final Set<String> nonCachedProductIds = getNonCachedIds(productIds);
     final Set<String> nonCachedCategoryIds = getNonCachedIds(categoryIds);
     final Set<String> nonCachedProductTypeIds = getNonCachedIds(productTypeIds);
+    final Set<String> nonCachedCustomObjectIds = getNonCachedIds(customObjectIds);
 
     // if everything is cached, no need to make a request to CTP.
     if (nonCachedProductIds.isEmpty()
         && nonCachedCategoryIds.isEmpty()
-        && nonCachedProductTypeIds.isEmpty()) {
+        && nonCachedProductTypeIds.isEmpty()
+        && nonCachedCustomObjectIds.isEmpty()) {
       return CompletableFuture.completedFuture(idToKey);
     }
 
@@ -60,7 +63,7 @@ public class ReferencesServiceImpl extends BaseServiceImpl implements References
     // https://github.com/commercetools/commercetools-project-sync/issues/42
     final CombinedResourceKeysRequest combinedResourceKeysRequest =
         new CombinedResourceKeysRequest(
-            nonCachedProductIds, nonCachedCategoryIds, nonCachedProductTypeIds);
+            nonCachedProductIds, nonCachedCategoryIds, nonCachedProductTypeIds, nonCachedCustomObjectIds);
 
     return getCtpClient()
         .execute(combinedResourceKeysRequest)
@@ -81,6 +84,7 @@ public class ReferencesServiceImpl extends BaseServiceImpl implements References
       cacheKeys(combinedResult.getProducts());
       cacheKeys(combinedResult.getCategories());
       cacheKeys(combinedResult.getProductTypes());
+      cacheKeys(combinedResult.getCustomObjects());
     }
   }
 
